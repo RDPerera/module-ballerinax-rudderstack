@@ -1,0 +1,1699 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "RudderStack API",
+    "description": "Write customer events to RudderStack through the Event Stream (HTTP) API, read and delete the profiles that RudderStack Profiles builds through the Activation API, and trigger and monitor Profiles runs through the Profiles API.",
+    "contact": {
+      "name": "RudderStack API documentation",
+      "url": "https://www.rudderstack.com/docs/api/"
+    },
+    "version": "2.0.0",
+    "x-ballerina-display": {
+      "label": "RudderStack"
+    }
+  },
+  "externalDocs": {
+    "url": "https://www.rudderstack.com/docs/api/"
+  },
+  "servers": [
+    {
+      "url": "{dataPlaneUrl}",
+      "description": "Event Stream. Your RudderStack data plane, or a self-hosted rudder-server.",
+      "variables": {
+        "dataPlaneUrl": {
+          "description": "Data plane URL from the RudderStack dashboard, e.g. https://example.dataplane.rudderstack.com",
+          "default": "https://hosted.rudderlabs.com"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "writeKey": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Event Stream",
+      "description": "Write traits and events to the data plane. https://www.rudderstack.com/docs/api/http-api/"
+    },
+    {
+      "name": "Activation",
+      "description": "Read and delete profiles materialised into Redis. https://www.rudderstack.com/docs/profiles/dev-docs/activation-api/"
+    },
+    {
+      "name": "Profiles",
+      "description": "Trigger and monitor Profiles project runs. https://www.rudderstack.com/docs/api/profiles-api/"
+    }
+  ],
+  "paths": {
+    "/v1/identify": {
+      "post": {
+        "tags": [
+          "Event Stream"
+        ],
+        "summary": "Identify a user and record their traits",
+        "operationId": "identify",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AnonymousIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/SentAtHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentifyEvent"
+              },
+              "example": {
+                "userId": "u123",
+                "traits": {
+                  "email": "alex@example.com",
+                  "firstName": "Alex",
+                  "plan": "enterprise"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/SourceDisabled"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/track": {
+      "post": {
+        "tags": [
+          "Event Stream"
+        ],
+        "summary": "Record an action a user performed",
+        "operationId": "track",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AnonymousIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/SentAtHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackEvent"
+              },
+              "example": {
+                "userId": "u123",
+                "event": "Signed Up",
+                "properties": {
+                  "application": "My App"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/SourceDisabled"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/page": {
+      "post": {
+        "tags": [
+          "Event Stream"
+        ],
+        "summary": "Record a web page view",
+        "operationId": "page",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AnonymousIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/SentAtHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/SourceDisabled"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/screen": {
+      "post": {
+        "tags": [
+          "Event Stream"
+        ],
+        "summary": "Record a mobile app screen view",
+        "operationId": "screen",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AnonymousIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/SentAtHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScreenEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/SourceDisabled"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/group": {
+      "post": {
+        "tags": [
+          "Event Stream"
+        ],
+        "summary": "Associate a user with a group (company, organisation, account)",
+        "operationId": "group",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AnonymousIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/SentAtHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/SourceDisabled"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/alias": {
+      "post": {
+        "tags": [
+          "Event Stream"
+        ],
+        "summary": "Merge two user identities",
+        "operationId": "alias",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AnonymousIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/SentAtHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AliasEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/SourceDisabled"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/batch": {
+      "post": {
+        "tags": [
+          "Event Stream"
+        ],
+        "summary": "Send several events in one request",
+        "description": "Max 4 MB per request and 32 KB per event. Each event sets `type`.",
+        "operationId": "batch",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AnonymousIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/SentAtHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/SourceDisabled"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/activation": {
+      "post": {
+        "tags": [
+          "Activation"
+        ],
+        "summary": "Get one or many profiles",
+        "description": "Send `id` for one profile or `ids` (1 to 100) for several, never both. A batch returns profiles in the order of `ids`. A profile exists only after a Profiles run has written it to the Redis destination",
+        "operationId": "getProfiles",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfilesRequest"
+              },
+              "examples": {
+                "single": {
+                  "value": {
+                    "entity": "user",
+                    "destinationId": "2aBcDeFgHiJkLmNoPqRsTuVwXyZ",
+                    "id": {
+                      "type": "user_id",
+                      "value": "u123"
+                    }
+                  }
+                },
+                "batch": {
+                  "value": {
+                    "entity": "user",
+                    "destinationId": "2aBcDeFgHiJkLmNoPqRsTuVwXyZ",
+                    "ids": [
+                      {
+                        "type": "user_id",
+                        "value": "u123"
+                      },
+                      {
+                        "type": "email",
+                        "value": "alex@example.com"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "A `Profile` for a single-profile request, `BatchProfilesResponse` for a batch request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponse"
+                },
+                "examples": {
+                  "single": {
+                    "value": {
+                      "entity": "user",
+                      "id": {
+                        "type": "user_id",
+                        "value": "u123"
+                      },
+                      "data": {
+                        "lifetime_value": 420,
+                        "is_churn_risk": false
+                      }
+                    }
+                  },
+                  "batch": {
+                    "value": {
+                      "profiles": [
+                        {
+                          "entity": "user",
+                          "id": {
+                            "type": "user_id",
+                            "value": "u123"
+                          },
+                          "data": {
+                            "lifetime_value": 420
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ActivationBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/ActivationNotFound"
+          }
+        },
+        "security": [
+          {
+            "serviceAccessToken": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Activation"
+        ],
+        "summary": "Delete one or many profiles from the Redis destination",
+        "description": "Send `id` for one profile or `ids` (1 to 100) for several. Deletes only the copy in the Redis destination. The next Profiles run recreates it",
+        "operationId": "deleteProfiles",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfilesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Deletion counts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteProfilesResult"
+                },
+                "example": {
+                  "deletedKeys": 20,
+                  "actualKeys": 30
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ActivationBadRequest"
+          },
+          "404": {
+            "description": "None of the provided IDs were found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "None of the provided userIds were found"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ApiServerError"
+          }
+        },
+        "security": [
+          {
+            "serviceAccessToken": []
+          }
+        ]
+      },
+      "servers": [
+        {
+          "url": "https://profiles.rudderstack.com/v2",
+          "description": "Activation API, US"
+        },
+        {
+          "url": "https://profiles-eu.rudderstack.com/v2",
+          "description": "Activation API, EU"
+        }
+      ]
+    },
+    "/sources/{profilesId}/start": {
+      "post": {
+        "tags": [
+          "Profiles"
+        ],
+        "summary": "Run a Profiles project",
+        "description": "Starts identity resolution and the feature-table build of a Profiles project. Only one run per project can be in progress",
+        "operationId": "startProfilesRun",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProfilesId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartProfilesRunRequest"
+              },
+              "example": {
+                "parameters": [
+                  "--model_refs models/id_graph_users"
+                ]
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Run started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartProfilesRunResponse"
+                },
+                "example": {
+                  "runId": "2cJmVZmRGZ8xLrKPgTuNqWvBdXh"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "409": {
+            "description": "A run is already in flight for this project. The docs define no body for this response.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "serviceAccessToken": []
+          }
+        ]
+      },
+      "servers": [
+        {
+          "url": "https://api.rudderstack.com/v2",
+          "description": "Profiles API, US"
+        },
+        {
+          "url": "https://api.eu.rudderstack.com/v2",
+          "description": "Profiles API, EU"
+        }
+      ]
+    },
+    "/sources/{profilesId}/runs/{runId}/status": {
+      "get": {
+        "tags": [
+          "Profiles"
+        ],
+        "summary": "Get a run's status",
+        "description": "`status` is `running` or `finished`. A failed run also reports `finished` and sets `error`",
+        "operationId": "getProfilesRunStatus",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProfilesId"
+          },
+          {
+            "name": "runId",
+            "in": "path",
+            "description": "Run ID returned by `startProfilesRun`",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The run's status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfilesRunStatus"
+                },
+                "example": {
+                  "jobId": "job-1",
+                  "jobRunId": "2cJmVZmRGZ8xLrKPgTuNqWvBdXh",
+                  "status": "finished",
+                  "startedAt": "2024-05-31T06:48:08.228Z",
+                  "finishedAt": "2024-05-31T07:02:11.904Z",
+                  "tasks": [
+                    {
+                      "taskId": "t1",
+                      "taskRunId": "tr1",
+                      "startedAt": "2024-05-31T06:48:08.228Z",
+                      "finishedAt": "2024-05-31T06:52:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "404": {
+            "description": "Unknown project or run.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "serviceAccessToken": []
+          }
+        ]
+      },
+      "servers": [
+        {
+          "url": "https://api.rudderstack.com/v2",
+          "description": "Profiles API, US"
+        },
+        {
+          "url": "https://api.eu.rudderstack.com/v2",
+          "description": "Profiles API, EU"
+        }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProfilesRequest": {
+        "description": "Request for one profile (`SingleProfileRequest`, with `id`) or several (`BatchProfilesRequest`, with `ids`)",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SingleProfileRequest"
+          },
+          {
+            "$ref": "#/components/schemas/BatchProfilesRequest"
+          }
+        ]
+      },
+      "ScreenEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonEventFields"
+          },
+          {
+            "$ref": "#/components/schemas/ScreenEventFields"
+          }
+        ],
+        "description": "Records a mobile app screen view"
+      },
+      "EventType": {
+        "type": "string",
+        "enum": [
+          "identify",
+          "track",
+          "page",
+          "screen",
+          "group",
+          "alias"
+        ],
+        "description": "Type of an event in a batch"
+      },
+      "BatchedEvent": {
+        "description": "One event in a batch. Set `type`, plus the field that event type requires: `event` for `track`, `name` for `page` and `screen`, `groupId` for `group`, and `previousId` for `alias`",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonEventFields"
+          },
+          {
+            "$ref": "#/components/schemas/BatchedEventFields"
+          }
+        ]
+      },
+      "Properties": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Free-form event or page properties"
+      },
+      "Traits": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email address"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "address": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Postal address"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time the user or group was created"
+          }
+        },
+        "additionalProperties": true,
+        "description": "User or group traits. Free-form; common keys are listed"
+      },
+      "Profile": {
+        "required": [
+          "data",
+          "entity",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Traits materialised into Redis. Empty when the identity has no profile"
+          },
+          "id": {
+            "$ref": "#/components/schemas/ProfileIdentifier",
+            "description": "Identity of the profile"
+          },
+          "entity": {
+            "type": "string",
+            "description": "Profiles entity, e.g. `user`"
+          }
+        },
+        "description": "A profile materialised in the Redis destination"
+      },
+      "Integrations": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Turns destinations on or off for this event, e.g. `{\"All\": true, \"Mixpanel\": false}`"
+      },
+      "AliasEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonEventFields"
+          },
+          {
+            "$ref": "#/components/schemas/AliasEventFields"
+          }
+        ],
+        "description": "Merges two identities of a user"
+      },
+      "CommonEventFields": {
+        "type": "object",
+        "properties": {
+          "anonymousId": {
+            "type": "string",
+            "description": "Pseudo-ID for a user who isn't known yet"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "channel": {
+            "type": "string",
+            "description": "Where the event came from, e.g. `server`, `web`, `mobile`"
+          },
+          "messageId": {
+            "type": "string",
+            "description": "Unique message ID, used for deduplication"
+          },
+          "sentAt": {
+            "type": "string",
+            "description": "Client time when the event was sent",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string",
+            "description": "The user's ID in your system"
+          },
+          "integrations": {
+            "$ref": "#/components/schemas/Integrations"
+          },
+          "originalTimestamp": {
+            "type": "string",
+            "description": "Client time when the event occurred",
+            "format": "date-time"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "When the event happened (ISO 8601). Omit for live events; set for historical imports",
+            "format": "date-time"
+          }
+        },
+        "description": "Fields shared by every event. Set `userId` or `anonymousId` to identify the user"
+      },
+      "PageEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonEventFields"
+          },
+          {
+            "$ref": "#/components/schemas/PageEventFields"
+          }
+        ],
+        "description": "Records a web page view"
+      },
+      "Context": {
+        "type": "object",
+        "properties": {
+          "traits": {
+            "$ref": "#/components/schemas/Traits"
+          },
+          "ip": {
+            "type": "string",
+            "description": "IP address of the user"
+          },
+          "locale": {
+            "type": "string",
+            "example": "en-US",
+            "description": "Locale of the user, e.g. `en-US`"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Asia/Colombo",
+            "description": "Time zone of the user, e.g. `Asia/Colombo`"
+          },
+          "userAgent": {
+            "type": "string",
+            "description": "User agent of the client"
+          },
+          "library": {
+            "$ref": "#/components/schemas/LibraryInfo",
+            "description": "Library that sent the event"
+          },
+          "app": {
+            "$ref": "#/components/schemas/AppInfo",
+            "description": "App that sent the event"
+          },
+          "campaign": {
+            "$ref": "#/components/schemas/CampaignInfo",
+            "description": "Campaign details (UTM parameters)"
+          },
+          "device": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Device details"
+          },
+          "os": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Operating system details"
+          },
+          "page": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Page details"
+          },
+          "screen": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Screen details"
+          },
+          "externalId": {
+            "type": "array",
+            "description": "External identifiers used by some destinations",
+            "items": {
+              "$ref": "#/components/schemas/ExternalId"
+            }
+          }
+        },
+        "additionalProperties": true,
+        "description": "Information about the message's environment. All fields are optional; other keys are passed\nthrough to destinations\n"
+      },
+      "BatchRequest": {
+        "required": [
+          "batch"
+        ],
+        "type": "object",
+        "properties": {
+          "batch": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchedEvent"
+            },
+            "description": "Events to send"
+          }
+        },
+        "description": "Events to send in one request (up to 4 MB per request and 32 KB per event)"
+      },
+      "TrackEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonEventFields"
+          },
+          {
+            "$ref": "#/components/schemas/TrackEventFields"
+          }
+        ],
+        "description": "Records an action a user performed"
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        },
+        "description": "Error body of the Activation and Profiles APIs. RudderStack sets `error`, `message`, or both"
+      },
+      "ProfileResponse": {
+        "description": "A `Profile` for a single-profile request, or `BatchProfilesResponse` for a batch request",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Profile"
+          },
+          {
+            "$ref": "#/components/schemas/BatchProfilesResponse"
+          }
+        ]
+      },
+      "GroupEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonEventFields"
+          },
+          {
+            "$ref": "#/components/schemas/GroupEventFields"
+          }
+        ],
+        "description": "Associates a user with a group, such as a company or an account"
+      },
+      "IdentifyEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonEventFields"
+          },
+          {
+            "$ref": "#/components/schemas/IdentifyEventFields"
+          }
+        ],
+        "description": "Identifies a user and records their traits"
+      },
+      "BatchProfilesRequest": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProfilesRequestBase"
+          },
+          {
+            "$ref": "#/components/schemas/BatchProfilesRequestFields"
+          }
+        ],
+        "description": "Request for several profiles (1 to 100)"
+      },
+      "IdentifyEventFields": {
+        "type": "object",
+        "properties": {
+          "traits": {
+            "$ref": "#/components/schemas/Traits"
+          }
+        },
+        "description": "Fields specific to `IdentifyEvent`"
+      },
+      "TrackEventFields": {
+        "required": [
+          "event"
+        ],
+        "type": "object",
+        "properties": {
+          "traits": {
+            "$ref": "#/components/schemas/Traits"
+          },
+          "event": {
+            "type": "string",
+            "description": "Name of the action, e.g. `Order Completed`"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/Properties"
+          }
+        },
+        "description": "Fields specific to `TrackEvent`"
+      },
+      "PageEventFields": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the page"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/Properties"
+          }
+        },
+        "description": "Fields specific to `PageEvent`"
+      },
+      "ScreenEventFields": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the screen"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/Properties"
+          }
+        },
+        "description": "Fields specific to `ScreenEvent`"
+      },
+      "GroupEventFields": {
+        "required": [
+          "groupId"
+        ],
+        "type": "object",
+        "properties": {
+          "traits": {
+            "$ref": "#/components/schemas/Traits"
+          },
+          "groupId": {
+            "type": "string",
+            "description": "ID of the group in your system"
+          }
+        },
+        "description": "Fields specific to `GroupEvent`"
+      },
+      "AliasEventFields": {
+        "required": [
+          "previousId"
+        ],
+        "type": "object",
+        "properties": {
+          "previousId": {
+            "type": "string",
+            "description": "The user's previous ID"
+          },
+          "traits": {
+            "$ref": "#/components/schemas/Traits"
+          }
+        },
+        "description": "Fields specific to `AliasEvent`"
+      },
+      "BatchedEventFields": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "previousId": {
+            "type": "string",
+            "description": "The user's previous ID. Required for `alias`"
+          },
+          "traits": {
+            "$ref": "#/components/schemas/Traits"
+          },
+          "groupId": {
+            "type": "string",
+            "description": "ID of the group. Required for `group`"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the page or screen. Required for `page` and `screen`"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EventType"
+          },
+          "event": {
+            "type": "string",
+            "description": "Name of the action. Required for `track`"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/Properties"
+          }
+        },
+        "description": "Fields specific to `BatchedEvent`"
+      },
+      "SingleProfileRequestFields": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/ProfileIdentifier",
+            "description": "Identity of the profile"
+          }
+        },
+        "description": "Fields specific to a single-profile request"
+      },
+      "BatchProfilesRequestFields": {
+        "required": [
+          "ids"
+        ],
+        "type": "object",
+        "properties": {
+          "ids": {
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfileIdentifier"
+            },
+            "description": "Identities of the profiles (1 to 100)"
+          }
+        },
+        "description": "Fields specific to a batch profiles request"
+      },
+      "SingleProfileRequest": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProfilesRequestBase"
+          },
+          {
+            "$ref": "#/components/schemas/SingleProfileRequestFields"
+          }
+        ],
+        "description": "Request for a single profile"
+      },
+      "ProfilesRequestBase": {
+        "required": [
+          "destinationId",
+          "entity"
+        ],
+        "type": "object",
+        "properties": {
+          "destinationId": {
+            "type": "string",
+            "description": "ID of the Redis destination the Profiles project writes to"
+          },
+          "entity": {
+            "type": "string",
+            "description": "Profiles entity, commonly `user`",
+            "example": "user"
+          }
+        },
+        "description": "Fields shared by single and batch profile requests"
+      },
+      "ProfileIdentifier": {
+        "required": [
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "ID type from the Profiles project, e.g. `user_id`, `email`",
+            "example": "user_id"
+          },
+          "value": {
+            "type": "string",
+            "example": "u123",
+            "description": "Value of the identifier, e.g. a user ID or an email address"
+          }
+        },
+        "description": "Identity of a profile: an ID type defined in the Profiles project and its value"
+      },
+      "BatchProfilesResponse": {
+        "required": [
+          "profiles"
+        ],
+        "type": "object",
+        "properties": {
+          "profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Profile"
+            },
+            "description": "Profiles in the order of the requested `ids`. An identity with no profile has empty `data`"
+          }
+        },
+        "description": "Profiles returned for a batch request"
+      },
+      "DeleteProfilesResult": {
+        "type": "object",
+        "properties": {
+          "actualKeys": {
+            "type": "integer",
+            "description": "Keys that existed for the requested IDs"
+          },
+          "deletedKeys": {
+            "type": "integer",
+            "description": "Keys actually removed"
+          }
+        },
+        "description": "Result of a profile deletion"
+      },
+      "StartProfilesRunRequest": {
+        "type": "object",
+        "properties": {
+          "parameters": {
+            "type": "array",
+            "description": "Arguments for the run, each flag and its value as one string. Allowed: `--model_refs`,\n`--begin_time`, `--end_time`, `--rebase_incremental`\n",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "Options for a Profiles run"
+      },
+      "StartProfilesRunResponse": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "description": "ID of the started run. Use it with `getProfilesRunStatus`"
+          }
+        },
+        "description": "Result of starting a Profiles run"
+      },
+      "ProfilesRunStatus": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "description": "ID of the job"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time the run started"
+          },
+          "jobRunId": {
+            "type": "string",
+            "description": "ID of the run"
+          },
+          "error": {
+            "description": "Error details. Present only when the run failed"
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfilesRunTask"
+            },
+            "description": "Tasks in the run"
+          },
+          "status": {
+            "type": "string",
+            "description": "`running` or `finished`. A failed run also reports `finished` and sets `error`",
+            "enum": [
+              "running",
+              "finished"
+            ]
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time the run finished"
+          }
+        },
+        "description": "Status of a Profiles run"
+      },
+      "ProfilesRunTask": {
+        "type": "object",
+        "properties": {
+          "taskRunId": {
+            "type": "string",
+            "description": "ID of this run of the task"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time the task started"
+          },
+          "taskId": {
+            "type": "string",
+            "description": "ID of the task"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time the task finished"
+          }
+        },
+        "description": "A task in a Profiles run"
+      },
+      "AppInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the app"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version of the app"
+          },
+          "build": {
+            "type": "string",
+            "description": "Build number of the app"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Namespace (bundle ID) of the app"
+          }
+        },
+        "additionalProperties": true,
+        "description": "App that sent the event"
+      },
+      "LibraryInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the library"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version of the library"
+          }
+        },
+        "additionalProperties": true,
+        "description": "Library that sent the event"
+      },
+      "CampaignInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Campaign name (`utm_campaign`)"
+          },
+          "source": {
+            "type": "string",
+            "description": "Campaign source (`utm_source`)"
+          },
+          "medium": {
+            "type": "string",
+            "description": "Campaign medium (`utm_medium`)"
+          },
+          "term": {
+            "type": "string",
+            "description": "Campaign term (`utm_term`)"
+          },
+          "content": {
+            "type": "string",
+            "description": "Campaign content (`utm_content`)"
+          }
+        },
+        "additionalProperties": true,
+        "description": "Campaign details (UTM parameters)"
+      },
+      "ExternalId": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Value of the external identifier"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the external identifier"
+          }
+        },
+        "additionalProperties": true,
+        "description": "An external identifier"
+      }
+    },
+    "responses": {
+      "Accepted": {
+        "description": "Event accepted",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            },
+            "example": "ok"
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Invalid JSON, empty batch, or an event over the size or nesting limit. A missing `userId` and\n`anonymousId` gives `400` only on data planes configured to enforce it (see `CommonEventFields`).\n",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            },
+            "examples": {
+              "invalidJson": {
+                "value": "invalid json"
+              },
+              "emptyBatch": {
+                "value": "empty batch payload"
+              },
+              "noIdentifier": {
+                "value": "request neither has anonymousId nor userId"
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Missing or invalid write key.",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            },
+            "examples": {
+              "missing": {
+                "value": "failed to read writekey from header"
+              },
+              "invalid": {
+                "value": "invalid write key"
+              }
+            }
+          }
+        }
+      },
+      "SourceDisabled": {
+        "description": "The write key is valid but its source is disabled.",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            },
+            "example": "source is disabled"
+          }
+        }
+      },
+      "PayloadTooLarge": {
+        "description": "Request body over the data plane's maximum (4 MB by default).",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            },
+            "example": "request size exceeds max limit"
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Rate limited.",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            },
+            "example": "max requests limit reached"
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Data plane failure.",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ActivationBadRequest": {
+        "description": "Empty `id`/`ids`, or more than 100 IDs.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "emptyId": {
+                "value": {
+                  "message": "id should have at least one item"
+                }
+              },
+              "empty": {
+                "value": {
+                  "message": "ids should have at least one item"
+                }
+              },
+              "tooMany": {
+                "value": {
+                  "message": "ids should have at most 100 items"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ActivationNotFound": {
+        "description": "The destination isn't a Redis destination, or the ID is blank.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Invalid Destination. Please verify you are passing the right destination ID"
+            }
+          }
+        }
+      },
+      "ApiUnauthorized": {
+        "description": "Missing or invalid access token, or no access to the resource.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Unauthorized request. Please check your access token"
+            }
+          }
+        }
+      },
+      "ApiServerError": {
+        "description": "RudderStack-side failure.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "Internal server error"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "SentAtHeader": {
+        "name": "SentAt",
+        "in": "header",
+        "description": "Time the request was sent (ISO 8601)",
+        "required": false,
+        "style": "simple",
+        "explode": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x-ballerina-name": "sentAt"
+      },
+      "AnonymousIdHeader": {
+        "name": "AnonymousId",
+        "in": "header",
+        "description": "Ordering key. The data plane processes requests that share this value in order. Without it, ordering across requests isn't guaranteed",
+        "required": false,
+        "style": "simple",
+        "explode": false,
+        "schema": {
+          "type": "string"
+        },
+        "x-ballerina-name": "anonymousId"
+      },
+      "ProfilesId": {
+        "name": "profilesId",
+        "in": "path",
+        "description": "ID of the Profiles project",
+        "required": true,
+        "style": "simple",
+        "explode": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "securitySchemes": {
+      "writeKey": {
+        "type": "http",
+        "description": "Event Stream. Source write key as the username; the data plane ignores the password.\n",
+        "scheme": "basic"
+      },
+      "serviceAccessToken": {
+        "type": "http",
+        "description": "Activation and Profiles. Workspace Service Access Token: Destination Data Access on the Redis\ndestination (Activation), or Edit on the Profiles resource (Profiles).\n",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
