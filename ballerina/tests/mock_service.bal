@@ -22,6 +22,8 @@ listener http:Listener ep0 = new (9090);
 const MOCK_WRITE_KEY = "test_write_key";
 const MOCK_ACCESS_TOKEN = "test_access_token";
 const RUNNING_PROFILES_ID = "running_project";
+const SINGLE_SHAPE_ID = "single_shape";
+const BATCH_SHAPE_ID = "batch_shape";
 
 // Mirrors the rudder-server gateway: the write key is the Basic auth username, the password is ignored,
 // and errors are plain text.
@@ -132,6 +134,15 @@ service /profiles/v2 on ep0 {
         http:Unauthorized? unauthorized = checkAccessToken(authorization);
         if unauthorized is http:Unauthorized {
             return unauthorized;
+        }
+        // Identities that make the mock answer with the other response shape, to test the client's checks.
+        if payload is BatchProfilesRequest && payload.ids[0].value == SINGLE_SHAPE_ID {
+            Profile profile = {entity: payload.entity, id: payload.ids[0], data: {}};
+            return <http:Ok>{body: profile};
+        }
+        if payload is SingleProfileRequest && payload.id.value == BATCH_SHAPE_ID {
+            BatchProfilesResponse profiles = {profiles: []};
+            return <http:Ok>{body: profiles};
         }
         if payload is BatchProfilesRequest {
             BatchProfilesResponse profiles = {
