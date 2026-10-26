@@ -2,7 +2,7 @@
 
 [RudderStack](https://www.rudderstack.com/) is a customer data platform that collects customer events from websites, apps and servers, routes them to warehouses and business tools, and builds unified customer profiles from them.
 
-The `ballerinax/rudderstack` connector offers APIs to connect and interact with three RudderStack APIs:
+The RudderStack connector offers APIs to connect and interact with three RudderStack APIs:
 
 - The [Event Stream (HTTP) API](https://www.rudderstack.com/docs/api/http-api/), to send `identify`, `track`, `page`, `screen`, `group`, `alias` and batched events.
 - The [Activation API](https://www.rudderstack.com/docs/profiles/dev-docs/activation-api/) (Beta), to read and delete the profiles that RudderStack Profiles materialises in a Redis destination.
