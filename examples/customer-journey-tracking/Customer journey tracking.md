@@ -12,8 +12,10 @@ This example tracks a customer's journey through an online store with the Event 
   ```
 - Create a `Config.toml` in this directory:
   ```toml
-  writeKey = "<your-source-write-key>"
   dataPlaneUrl = "https://<your-workspace>.dataplane.rudderstack.com"
+
+  [auth]
+  writeKey = "<your-source-write-key>"
   ```
 
 ## Run the example

@@ -21,14 +21,16 @@
 import ballerina/io;
 import ballerinax/rudderstack;
 
-configurable string writeKey = ?;
+configurable rudderstack:AuthConfig auth = ?;
 configurable string dataPlaneUrl = ?;
-configurable string anonymousId = "anon-5d21e8";
-configurable string userId = "u-2001";
-configurable string companyId = "acme-inc";
+
+// Sample identities of the visitor and their company.
+final string anonymousId = "anon-5d21e8";
+final string userId = "u-2001";
+final string companyId = "acme-inc";
 
 public function main() returns error? {
-    rudderstack:Client rudderstackClient = check new ({auth: {writeKey}}, serviceUrl = dataPlaneUrl);
+    rudderstack:Client rudderstackClient = check new ({auth}, serviceUrl = dataPlaneUrl);
 
     // Step 1: Record the anonymous visitor's landing page view, with the campaign that brought them
     string response = check rudderstackClient->page({

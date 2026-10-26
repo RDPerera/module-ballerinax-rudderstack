@@ -22,7 +22,7 @@ import ballerina/io;
 import ballerina/lang.runtime;
 import ballerinax/rudderstack;
 
-configurable string serviceAccessToken = ?;
+configurable rudderstack:AuthConfig auth = ?;
 configurable rudderstack:Region region = rudderstack:US;
 configurable string profilesId = ?;
 configurable string destinationId = ?;
@@ -30,7 +30,7 @@ configurable string[] userIds = ["u-1001", "u-1002"];
 configurable decimal pollIntervalSeconds = 30;
 
 public function main() returns error? {
-    rudderstack:Client rudderstackClient = check new ({auth: {serviceAccessToken}, region});
+    rudderstack:Client rudderstackClient = check new ({auth, region});
 
     // Step 1: Start a run of the Profiles project
     rudderstack:StartProfilesRunResponse run = check rudderstackClient->startProfilesRun(profilesId);
