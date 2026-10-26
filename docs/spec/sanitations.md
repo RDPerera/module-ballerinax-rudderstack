@@ -80,7 +80,8 @@ public `Client`, `ConnectionConfig`, `AuthConfig`, `Region` and `EventHeaders`. 
   single client with a single base URL and credential, so a single generated client can't call all three APIs.
 - **Write key**: The data plane reads the source write key from the HTTP Basic auth **username** and ignores the
   password (`writeKey, _, ok := r.BasicAuth()` in `gateway/handle_http_auth.go` of rudder-server). The Ballerina HTTP
-  client rejects an empty password, so the wrapper sends the placeholder password `unused`. Users only set
+  client rejects an empty password, so the wrapper sends the write key as the password too, which avoids a hard-coded
+  placeholder secret and also matches the docs' alternative reading (the key as the password). Users only set
   `auth.writeKey`.
 
 7. Make the operations easier to use in the hand-written client
