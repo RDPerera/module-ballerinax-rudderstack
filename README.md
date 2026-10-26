@@ -17,16 +17,6 @@ The `ballerinax/rudderstack` connector offers APIs to connect and interact with 
 - The [Activation API](https://www.rudderstack.com/docs/profiles/dev-docs/activation-api/) (Beta), to read and delete the profiles that RudderStack Profiles materialises in a Redis destination.
 - The [Profiles API](https://www.rudderstack.com/docs/api/profiles-api/), to start a Profiles project run and check its status.
 
-The APIs are served from different hosts and use different credentials. A single `rudderstack:Client` handles all three: it sends the Event Stream operations to your data plane with the source write key, and the Activation and Profiles operations to the hosts of your workspace's region with a Service Access Token.
-
-| Operations | Credential | Host |
-|---|---|---|
-| `identify`, `track`, `page`, `screen`, `group`, `alias`, `batch` | Source write key (`auth.writeKey`) | Your data plane URL (`serviceUrl`) |
-| `getProfile`, `getProfiles`, `deleteProfile`, `deleteProfiles` | Service Access Token (`auth.serviceAccessToken`) | `profiles.rudderstack.com` (US) or `profiles-eu.rudderstack.com` (EU) |
-| `startProfilesRun`, `getProfilesRunStatus` | Service Access Token (`auth.serviceAccessToken`) | `api.rudderstack.com` (US) or `api.eu.rudderstack.com` (EU) |
-
-Set only the credentials of the APIs you call. For example, a client that only sends events needs only the write key and the data plane URL, and a client that only reads profiles needs only the Service Access Token.
-
 ### Key features
 
 - Send `identify`, `track`, `page`, `screen`, `group` and `alias` events, one at a time or several in one `batch` call.
@@ -39,6 +29,16 @@ Set only the credentials of the APIs you call. For example, a client that only s
 ## Setup guide
 
 To use the RudderStack connector, you must have access to a RudderStack workspace. The Event Stream API is available on every plan, including the free plan. The Activation and Profiles APIs need RudderStack Profiles, and the Activation API also needs a Redis destination that the Profiles project syncs to.
+
+The APIs are served from different hosts and use different credentials. A single `rudderstack:Client` handles all three: it sends the Event Stream operations to your data plane with the source write key, and the Activation and Profiles operations to the hosts of your workspace's region with a Service Access Token.
+
+| Operations | Credential | Host |
+|---|---|---|
+| `identify`, `track`, `page`, `screen`, `group`, `alias`, `batch` | Source write key (`auth.writeKey`) | Your data plane URL (`serviceUrl`) |
+| `getProfile`, `getProfiles`, `deleteProfile`, `deleteProfiles` | Service Access Token (`auth.serviceAccessToken`) | `profiles.rudderstack.com` (US) or `profiles-eu.rudderstack.com` (EU) |
+| `startProfilesRun`, `getProfilesRunStatus` | Service Access Token (`auth.serviceAccessToken`) | `api.rudderstack.com` (US) or `api.eu.rudderstack.com` (EU) |
+
+Set only the credentials of the APIs you call. For example, a client that only sends events needs only the write key and the data plane URL, and a client that only reads profiles needs only the Service Access Token.
 
 ### Step 1: Sign in to RudderStack
 
