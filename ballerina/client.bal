@@ -21,10 +21,6 @@ const ACTIVATION_EU_URL = "https://profiles-eu.rudderstack.com/v2";
 const PROFILES_US_URL = "https://api.rudderstack.com/v2";
 const PROFILES_EU_URL = "https://api.eu.rudderstack.com/v2";
 
-// The data plane reads only the Basic auth username (the write key) and ignores the password,
-// but the Ballerina HTTP client rejects an empty password, so a placeholder is sent instead.
-const WRITE_KEY_PASSWORD = "unused";
-
 # Region of the RudderStack workspace. Selects the Activation and Profiles API hosts.
 public enum Region {
     # United States (`profiles.rudderstack.com`, `api.rudderstack.com`)
@@ -138,7 +134,9 @@ public isolated client class Client {
             if serviceUrl is () || serviceUrl.trim() == "" {
                 return error("Set `serviceUrl` to the data plane URL of your workspace to use `auth.writeKey`");
             }
-            http:CredentialsConfig credentials = {username: writeKey, password: WRITE_KEY_PASSWORD};
+            // The data plane reads the write key from the Basic auth username and ignores the password. The
+            // Ballerina HTTP client rejects an empty password, so the write key is sent as the password too.
+            http:CredentialsConfig credentials = {username: writeKey, password: writeKey};
             GeneratedClient 'client = check new (toGeneratedConfig(config, credentials), serviceUrl);
             eventStreamClient = 'client;
         }

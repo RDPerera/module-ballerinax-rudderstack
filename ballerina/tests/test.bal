@@ -436,3 +436,102 @@ isolated function testActivationAndProfilesWithoutAccessToken() returns error? {
     test:assertTrue(status is error
         && status.message() == "The Profiles operations need `auth.serviceAccessToken` in the connection config");
 }
+
+// ---------------------------------------------------------------- Response shapes and HTTP settings
+
+@test:Config {
+    groups: ["mock_tests"]
+}
+isolated function testGetProfileUnexpectedResponse() returns error? {
+    Profile|error response = rudderstack->getProfile({
+        entity: "user",
+        destinationId: "2aBcDeFgHiJkLmNoPqRsTuVwXyZ",
+        id: {'type: "user_id", value: BATCH_SHAPE_ID}
+    });
+    test:assertTrue(response is error && response.message() == "Expected a single profile in the response");
+}
+
+@test:Config {
+    groups: ["mock_tests"]
+}
+isolated function testGetProfilesUnexpectedResponse() returns error? {
+    BatchProfilesResponse|error response = rudderstack->getProfiles({
+        entity: "user",
+        destinationId: "2aBcDeFgHiJkLmNoPqRsTuVwXyZ",
+        ids: [{'type: "user_id", value: SINGLE_SHAPE_ID}]
+    });
+    test:assertTrue(response is error && response.message() == "Expected a batch of profiles in the response");
+}
+
+// Every HTTP setting of the connection config reaches the generated clients, including the optional ones.
+@test:Config {
+    groups: ["mock_tests"]
+}
+isolated function testHttpSettingsForwarded() {
+    ConnectionConfig config = {
+        auth: {},
+        timeout: 45,
+        followRedirects: {enabled: true, maxCount: 3},
+        poolConfig: {maxActiveConnections: 10},
+        circuitBreaker: {rollingWindow: {timeWindow: 60, bucketSize: 20}, failureThreshold: 0.5, resetTime: 30,
+            statusCodes: [500, 503]},
+        retryConfig: {count: 3, interval: 2},
+        cookieConfig: {enabled: true},
+        secureSocket: {enable: false},
+        proxy: {host: "proxy.example.com", port: 3128}
+    };
+    GeneratedConnectionConfig generated = toGeneratedConfig(config, {token: "token"});
+    test:assertEquals(generated.timeout, 45d);
+    test:assertEquals(generated?.followRedirects, config?.followRedirects);
+    test:assertEquals(generated?.poolConfig, config?.poolConfig);
+    test:assertEquals(generated?.circuitBreaker, config?.circuitBreaker);
+    test:assertEquals(generated?.retryConfig, config?.retryConfig);
+    // CookieConfig can hold a cookie handler object, so it is compared by reference.
+    test:assertTrue(generated?.cookieConfig === config?.cookieConfig);
+    test:assertEquals(generated?.secureSocket, config?.secureSocket);
+    test:assertEquals(generated?.proxy, config?.proxy);
+
+    GeneratedConnectionConfig defaults = toGeneratedConfig({auth: {}}, {token: "token"});
+    test:assertTrue(defaults?.retryConfig is () && defaults?.proxy is () && defaults?.secureSocket is ());
+}
+
+// The generated client's optional arguments (the headers and the default URL) work when left out.
+@test:Config {
+    groups: ["mock_tests"]
+}
+isolated function testGeneratedClientDefaults() returns error? {
+    GeneratedClient eventStream = check new ({auth: {username: MOCK_WRITE_KEY, password: MOCK_WRITE_KEY}},
+        "http://localhost:9090");
+    string identified = check eventStream->identify({userId: "u123"});
+    string tracked = check eventStream->track({userId: "u123", event: "Signed Up"});
+    string paged = check eventStream->page({userId: "u123", name: "Home"});
+    string screened = check eventStream->screen({userId: "u123", name: "Home"});
+    string grouped = check eventStream->group({userId: "u123", groupId: "acme"});
+    string aliased = check eventStream->alias({userId: "u123", previousId: "anon-1"});
+    string batched = check eventStream->batch({batch: [{'type: "identify", userId: "u123"}]});
+    test:assertEquals([identified, tracked, paged, screened, grouped, aliased, batched],
+        ["ok", "ok", "ok", "ok", "ok", "ok", "ok"]);
+
+    GeneratedClient activation = check new ({auth: {token: MOCK_ACCESS_TOKEN}}, MOCK_ACTIVATION_URL);
+    ProfileResponse profiles = check activation->getProfiles({
+        entity: "user",
+        destinationId: "2aBcDeFgHiJkLmNoPqRsTuVwXyZ",
+        id: {'type: "user_id", value: "u123"}
+    });
+    test:assertTrue(profiles is Profile);
+    DeleteProfilesResult deleted = check activation->deleteProfiles({
+        entity: "user",
+        destinationId: "2aBcDeFgHiJkLmNoPqRsTuVwXyZ",
+        id: {'type: "user_id", value: "u123"}
+    });
+    test:assertEquals(deleted.deletedKeys, 10);
+
+    GeneratedClient profilesClient = check new ({auth: {token: MOCK_ACCESS_TOKEN}}, MOCK_PROFILES_URL);
+    StartProfilesRunResponse run = check profilesClient->startProfilesRun("2aProfilesProjectId", {});
+    test:assertEquals(run.runId, "2cJmVZmRGZ8xLrKPgTuNqWvBdXh");
+    ProfilesRunStatus status = check profilesClient->getProfilesRunStatus("2aProfilesProjectId", "run-1");
+    test:assertEquals(status.jobRunId, "run-1");
+
+    // The generated default URL is only used when no URL is given; creating the client makes no request.
+    GeneratedClient _ = check new ({auth: {token: MOCK_ACCESS_TOKEN}});
+}

@@ -1,0 +1,12 @@
+# ballerina:14 is a false positive for this connector. It matches identifier names containing words such as
+# "token", "password" or "auth", not secret values. Flagged code is:
+#  - the public `AuthConfig.serviceAccessToken` field, whose default is nil (no token), not a secret value,
+#  - the `serviceAccessToken` local variable, the `{token: serviceAccessToken}` bearer config and the
+#    `{username: writeKey, password: writeKey}` basic auth config in `Client.init`, which forward the
+#    caller-supplied credentials to the HTTP client,
+#  - the generated `auth: config.auth` forwarding of caller-supplied configuration in `oas_client.bal`.
+# No credential is embedded in the source; a connector receives its credentials from the caller.
+# TODO: replace this rule exclusion with a targeted scan suppression (with a reason) once `bal scan` supports it
+# (planned for v0.13.0).
+[rule]
+exclude = ["ballerina:14"]
