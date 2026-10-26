@@ -12,8 +12,10 @@ This example records how an anonymous visitor from a marketing campaign becomes 
   ```
 - Create a `Config.toml` in this directory:
   ```toml
-  writeKey = "<your-source-write-key>"
   dataPlaneUrl = "https://<your-workspace>.dataplane.rudderstack.com"
+
+  [auth]
+  writeKey = "<your-source-write-key>"
   ```
 
 ## Run the example

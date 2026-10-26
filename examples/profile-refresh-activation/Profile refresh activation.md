@@ -14,11 +14,13 @@ This example refreshes the profiles of a RudderStack Profiles project and reads 
   ```
 - Create a `Config.toml` in this directory:
   ```toml
-  serviceAccessToken = "<your-service-access-token>"
   region = "US"  # or "EU"
   profilesId = "<your-profiles-project-id>"
   destinationId = "<your-redis-destination-id>"
   userIds = ["u-1001", "u-1002"]
+
+  [auth]
+  serviceAccessToken = "<your-service-access-token>"
   ```
 
 ## Run the example

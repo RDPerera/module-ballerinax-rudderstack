@@ -23,13 +23,15 @@
 import ballerina/io;
 import ballerinax/rudderstack;
 
-configurable string writeKey = ?;
+configurable rudderstack:AuthConfig auth = ?;
 configurable string dataPlaneUrl = ?;
-configurable string userId = "u-1001";
-configurable string anonymousId = "anon-7f3c9a";
+
+// Sample identities of the customer.
+final string userId = "u-1001";
+final string anonymousId = "anon-7f3c9a";
 
 public function main() returns error? {
-    rudderstack:Client rudderstackClient = check new ({auth: {writeKey}}, serviceUrl = dataPlaneUrl);
+    rudderstack:Client rudderstackClient = check new ({auth}, serviceUrl = dataPlaneUrl);
 
     // Step 1: Identify the customer and record their traits
     string response = check rudderstackClient->identify({
