@@ -27,6 +27,15 @@ The APIs are served from different hosts and use different credentials. A single
 
 Set only the credentials of the APIs you call. For example, a client that only sends events needs only the write key and the data plane URL, and a client that only reads profiles needs only the Service Access Token.
 
+### Key features
+
+- Send `identify`, `track`, `page`, `screen`, `group` and `alias` events, one at a time or several in one `batch` call.
+- Use one client for all three APIs. It sends each operation to the right host with the right credential.
+- Keep a user's events in order with the `AnonymousId` header, which the client fills in from each event's `anonymousId`.
+- Read one profile (`getProfile`) or up to 100 (`getProfiles`), and delete them (`deleteProfile`, `deleteProfiles`).
+- Start a Profiles project run (`startProfilesRun`) and poll it until it finishes (`getProfilesRunStatus`).
+- Switch the Activation and Profiles APIs between the US and EU regions with the `region` setting.
+
 ## Setup guide
 
 To use the RudderStack connector, you must have access to a RudderStack workspace. The Event Stream API is available on every plan, including the free plan. The Activation and Profiles APIs need RudderStack Profiles, and the Activation API also needs a Redis destination that the Profiles project syncs to.
@@ -162,9 +171,9 @@ bal run
 
 The `RudderStack` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-rudderstack/tree/main/examples/), covering the following use cases:
 
-1. [Customer journey tracking](https://github.com/ballerina-platform/module-ballerinax-rudderstack/tree/main/examples/customer-journey-tracking) — Identify a customer, record the product page they view, then send their add-to-cart and order events together in one batch.
-2. [B2B signup attribution](https://github.com/ballerina-platform/module-ballerinax-rudderstack/tree/main/examples/b2b-signup-attribution) — Record an anonymous visitor's landing page view with its campaign, link the visitor to the new user ID at signup, record the user's traits, and associate the user with their company.
-3. [Profile refresh and activation](https://github.com/ballerina-platform/module-ballerinax-rudderstack/tree/main/examples/profile-refresh-activation) — Start a Profiles run, poll it until it finishes, then fetch the refreshed profiles of a few customers through the Activation API.
+1. [Customer journey tracking](https://github.com/ballerina-platform/module-ballerinax-rudderstack/tree/main/examples/customer-journey-tracking): Identify a customer, record the product page they view, then send their add-to-cart and order events together in one batch.
+2. [B2B signup attribution](https://github.com/ballerina-platform/module-ballerinax-rudderstack/tree/main/examples/b2b-signup-attribution): Record an anonymous visitor's landing page view with its campaign, link the visitor to the new user ID at signup, record the user's traits, and associate the user with their company.
+3. [Profile refresh and activation](https://github.com/ballerina-platform/module-ballerinax-rudderstack/tree/main/examples/profile-refresh-activation): Start a Profiles run, poll it until it finishes, then fetch the refreshed profiles of a few customers through the Activation API.
 
 ## Build from the source
 
