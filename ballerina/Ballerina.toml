@@ -5,7 +5,7 @@ name = "rudderstack"
 version = "1.0.1"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = ["Name/RudderStack", "Area/Marketing & Social Media", "Vendor/RudderStack", "Cost/Freemium", "Type/Connector", "RudderStack", "CDP", "Customer Data Platform", "Event Streaming"]
+keywords = ["Name/RudderStack", "Area/Marketing & Social Media", "Area/Customer Data Platform", "Vendor/RudderStack", "Cost/Freemium", "Type/Connector", "RudderStack", "CDP", "Customer Data Platform", "Event Streaming"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-rudderstack"
 
